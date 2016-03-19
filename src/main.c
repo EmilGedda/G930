@@ -17,7 +17,7 @@ int connect(libusb_device* device, libusb_device_handle **handle) {
 		return 1;
 	}
 
-	r = libusb_claim_interface(*handle, 2);
+	r = libusb_claim_interface(*handle, 0);
 
 	if(r != 0) {
 		printf("Unable to claim the interface.\n");
@@ -51,11 +51,13 @@ libusb_device* get_headset(libusb_device **devices, ssize_t len) {
 	return NULL;
 }
 
-void mic_enabled(uint8_t data, libusb_device_handle **handle) {
-	if(data != 0) {
-		data = 1;
+void mic_enabled(uint8_t input, libusb_device_handle **handle) {
+	if(input != 0) {
+		input = 1;
 	}
-	int r = libusb_control_transfer(*handle, 2, 1, 2, 0, &data, 1, 10);
+	unsigned char data[1] = {input};
+	/* 				 handle, ReqType, Req, Val, Idx,data, len, time*/
+	int r = libusb_control_transfer(*handle, 0x21, 0x01, 0x100, 0x500, data, 1, 1000);
 	if (r > 0) {
 		printf("Successful transfer!\n");
 		return;
@@ -95,7 +97,7 @@ int main () {
 	r = connect(headset, &handle);	
 	if (r != 0) return r;
 	mic_enabled(1, &handle);
-	libusb_release_interface(handle, 2);
+	libusb_release_interface(handle, 0);
 	libusb_close(handle);
 	libusb_free_device_list(devices, 1);
 	libusb_exit(ctx);
