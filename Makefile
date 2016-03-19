@@ -1,7 +1,7 @@
 # Originated from LemonBoy's Makefile in lemonbar
 
 CC	?= gcc
-CFLAGS	+= -Wall -std=c99 -Os
+CFLAGS	+= -Wall -std=c99 -Os -g
 LDFLAGS += -lusb-1.0
 
 EXEC	= g930
